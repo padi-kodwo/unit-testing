@@ -95,4 +95,9 @@ public class MangaService {
     }
 
 
+    public List<Manga> findAllFromDb() {
+        return mangaRepo.findAll();
+    }
+
+
 }

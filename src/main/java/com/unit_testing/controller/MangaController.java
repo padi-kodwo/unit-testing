@@ -2,9 +2,9 @@ package com.unit_testing.controller;
 
 import com.unit_testing.model.Manga;
 import com.unit_testing.service.MangaService;
+import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,6 @@ public class MangaController {
     private final MangaService mangaService;
 
 
-    @Autowired
     public MangaController(MangaService mangaService) {
         this.mangaService = mangaService;
     }
@@ -39,6 +38,12 @@ public class MangaController {
                                                       HttpServletRequest httpServletRequest) {
 
         String sessionId = httpServletRequest.getSession().getId();
+
+        List<Manga> mangaList = mangaService.getMangaByTitleFromMangaAPI(title, sessionId);
+
+        mangaList.parallelStream().forEach(manga -> {
+            manga = mangaService.add(manga, sessionId);
+        });
 
         return CompletableFuture.completedFuture(mangaService.getMangaByTitleFromMangaAPI(title, sessionId));
     }
@@ -57,10 +62,21 @@ public class MangaController {
                 .collect(Collectors.toList());
 
         mangaList.parallelStream().forEach(manga -> {
+            LocalTime localTime = LocalTime.now();
+
             if (manga.getEpisodes() > 100) {
+                logger.info("[ " + sessionId + " ] : " + localTime);
+                manga.setTime(localTime);
+                mangaService.add(manga, sessionId);
                 cleanedManga.add(manga);
             }
         });
+
+
+        //mangaList = mangaService.findAllFromDb();
+
+        logger.info("[ " + sessionId + " ] found manga in db " + mangaList.toString());
+
 
         return mangaList;
     }
@@ -83,6 +99,7 @@ public class MangaController {
                 cleanedManga.add(manga);
             }
         });
+
 
         return mangaList;
     }

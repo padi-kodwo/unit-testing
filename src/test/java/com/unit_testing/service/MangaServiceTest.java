@@ -61,7 +61,6 @@ public class MangaServiceTest {
     @Test
     public void getMangaByTitle() {
 
-
         // Parsing mock file
         MangaSearchResult msr = new MangaSearchResult();
         msr.setRequest_hash("request:search:2dab57bcb96e92637b33c6cfe6f0b244b3df4ac9");

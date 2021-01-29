@@ -35,6 +35,7 @@ public class MangaControllerTest {
     @Autowired
     protected WebApplicationContext webApplicationContext;
     MockMvc mockMvc;
+
     @Autowired
     MangaController mangaController;
 
